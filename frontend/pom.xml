@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.skarware</groupId>
+        <artifactId>exchange-rates-angular-spring</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath><!-- lookup for parent in main's project pom.xml file -->
+    </parent>
+
+    <artifactId>frontend</artifactId>
+    <name>frontend</name>
+    <description>Front-End Module For Exchange Rates website using Spring Boot + Angular</description>
+
+    <packaging>pom</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+
+                <!-- Frontend Maven Plugin configuration -->
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <!-- You can find latest released version: https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ -->
+                <version>1.9.1</version>
+                <configuration>
+                    <!-- Node v14.5.0 includes npm 6.14.5 -->
+                    <nodeVersion>v14.5.0</nodeVersion>
+                    <!-- OPTIONAL: with node version greater than 4.0.0 will use npm provided by node distribution -->
+                    <!-- <npmVersion>6.14.5</npmVersion> -->
+
+                    <!-- OPTIONAL:
+                    The base directory for running all Node/npm commands (usually the directory that contains package.json).
+                    The default working directory is your project's base directory (the same directory as your pom.xml).
+                    You can change the working directory if you must, but notice that npm packages will always be installed
+                    in node_modules next to your package.json, which is default npm behavior. -->
+                    <!--<workingDirectory>src/main/frontend</workingDirectory>-->
+
+                    <!-- OPTIONAL:
+                    The installation directory for installing local copy of node and npm executables.
+                    You can set this property on the different goals. Or choose to set it for all the goals. -->
+                    <installDirectory>target</installDirectory>
+
+                </configuration>
+                <!-- NOTICE:
+                The versions of Node and npm are downloaded from https://nodejs.org/dist, extracted and put into
+                a node folder created in your installation directory . Node/npm will only be "installed" locally
+                to your project. It will not be installed globally on the whole system (and it will not interfere
+                with any Node/npm installations already present). -->
+
+                <!-- Set up the goals to execute during the build lifecycle -->
+                <executions>
+
+                    <!-- #1 Install Node and NPM -->
+                    <execution>
+                        <!-- OPTIONAL: you don't really need execution ids, but it looks nice in your build log. -->
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <!-- OPTIONAL: default phase is "generate-resources" -->
+                        <phase>generate-resources</phase>
+                    </execution>
+
+                    <!-- #2 Install frontend module dependencies -->
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <!-- OPTIONAL: default phase is "generate-resources" -->
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <!-- OPTIONAL: The default argument is actually "install", so unless you need
+                            to run some other npm command, you can remove this whole <configuration> section. -->
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <!-- NOTICE: By default npm packages will be installed in the node_modules folder in your working directory next to package.json. -->
+
+                    <!-- #3 Run build-prod script in package.json file (must add it manually) to build the frontend bundle -->
+                    <execution>
+                        <id>build-prod</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build-prod</arguments>
+                        </configuration>
+                        <!-- OPTIONAL: the default phase is "generate-resources" -->
+                        <phase>generate-resources</phase>
+                    </execution>
+
+                    <!--                    &lt;!&ndash; An example to run Webpack &ndash;&gt;-->
+                    <!--                    <execution>-->
+                    <!--                        <id>webpack build</id>-->
+                    <!--                        <goals>-->
+                    <!--                            <goal>webpack</goal>-->
+                    <!--                        </goals>-->
+                    <!--                        &lt;!&ndash; optional: the default phase is "generate-resources" &ndash;&gt;-->
+                    <!--                        <phase>generate-resources</phase>-->
+                    <!--                        <configuration>-->
+                    <!--                            &lt;!&ndash; optional: if not specified, it will run webpack's default-->
+                    <!--                            build (and you can remove this whole <configuration> section.) &ndash;&gt;-->
+                    <!--                            <arguments>-p</arguments>-->
+                    <!--                        </configuration>-->
+                    <!--                    </execution>-->
+
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
