@@ -47,7 +47,10 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>runtime</scope>
+            <!--<scope>runtime</scope>-->
+            <!-- To use the org.h2.tools.Server class in main method during code build,
+                 change H2 dependency scope to compile. This is so called Server Mode. -->
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
