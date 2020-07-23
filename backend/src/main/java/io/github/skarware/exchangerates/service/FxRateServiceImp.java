@@ -58,11 +58,15 @@ public class FxRateServiceImp implements FxRateService {
         CurrencyModel sourceCurrencyModel = currencyModelService.getOrMakeCurrencyModel(sourceCurrencyCode);
         CurrencyModel targetCurrencyModel = currencyModelService.getOrMakeCurrencyModel(targetCurrencyCode);
 
-        // Create new FxRate with given data
-        FxRate fxRate = new FxRate(sourceCurrencyModel, targetCurrencyModel, new BigDecimal(5));
+        // If valid data returned proceed with saving it else abort save operation and return null
+        if (sourceCurrencyModel != null && targetCurrencyModel != null) {
+            // Create new FxRate with given data
+            FxRate fxRate = new FxRate(sourceCurrencyModel, targetCurrencyModel, new BigDecimal(5));
 
-        // Save and return new FxRate
-        return this.save(fxRate);
+            // Save and return new FxRate
+            return this.save(fxRate);
+        }
+        return null;
     }
 
 

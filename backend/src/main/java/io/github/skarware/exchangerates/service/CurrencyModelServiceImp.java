@@ -28,25 +28,35 @@ public class CurrencyModelServiceImp implements CurrencyModelService {
 
     @Override
     public CurrencyModel findByAlphabeticCode(String alphabeticCode) {
-        return currencyModelRepository.findById(Currency.getInstance(alphabeticCode).getNumericCode())
-                .orElseThrow(() -> new EntityNotFoundException(alphabeticCode));
+        // Check if alphabeticCode is valid ISO 4217 currency code
+        boolean isAlphabeticCodeValid = Currency.getAvailableCurrencies().stream().anyMatch(el -> el.getCurrencyCode().equals(alphabeticCode));
+
+        if (isAlphabeticCodeValid) {
+            return currencyModelRepository.findById(Currency.getInstance(alphabeticCode).getNumericCode())
+                    .orElseThrow(() -> new EntityNotFoundException(alphabeticCode));
+        } else {
+            throw new IllegalArgumentException(String.valueOf(alphabeticCode));
+        }
     }
 
     public CurrencyModel getOrMakeCurrencyModel(String currencyCode) {
-        CurrencyModel currencyModel;
+        String exceptionMsg;
         // Check if currency already exists in database, if not then instantiate new and return one
         try {
-            currencyModel = findByAlphabeticCode(currencyCode);
-        } catch (EntityNotFoundException exception) {
-            System.err.println("Currency '" + exception.getMessage() + "' not found in database. Instantiating for saving new one.");
+            return findByAlphabeticCode(currencyCode);
+        } catch (EntityNotFoundException ignored) {
+            // If currency not present in database try create the new and return
             try {
-                currencyModel = new CurrencyModel(currencyCode);
-            } catch (IllegalArgumentException exc) {
-                System.err.println("Currency code '" + exc.getMessage() +"' is not valid ISO 4217 currency code.");
-                return null;
+                return new CurrencyModel(currencyCode);
+            } catch (IllegalArgumentException exception) {
+                exceptionMsg = exception.getMessage();
             }
+        } catch (IllegalArgumentException exception) {
+            exceptionMsg = exception.getMessage();
         }
-        return currencyModel;
+        // On invalid input data return the null
+        System.err.println("Currency code '" + exceptionMsg + "' is not valid ISO 4217 currency code.");
+        return null;
     }
 
     @Override
