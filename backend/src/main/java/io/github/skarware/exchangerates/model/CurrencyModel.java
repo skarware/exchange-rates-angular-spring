@@ -36,7 +36,7 @@ public class CurrencyModel implements Persistable<Integer> {
         if (numericCode > 0) {
             this.numericCode = numericCode;
         } else {
-            throw new IllegalArgumentException("Currency Numeric Code not found: " + numericCode);
+            throw new IllegalArgumentException(String.valueOf(numericCode));
         }
     }
 
