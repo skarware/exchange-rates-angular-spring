@@ -21,11 +21,11 @@ public class FxRate {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "source_currency", referencedColumnName = "numeric_code", nullable = false)
     private CurrencyModel sourceCurrency;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "target_currency", referencedColumnName = "numeric_code", nullable = false)
     private CurrencyModel targetCurrency;
 
@@ -36,5 +36,14 @@ public class FxRate {
     @Temporal(TemporalType.DATE)
     @Column(name = "effective_date", columnDefinition = "DATE", nullable = false)
     private Date effectiveDate;
+
+    public FxRate(CurrencyModel sourceCurrency, CurrencyModel targetCurrency, BigDecimal exchangeRate) {
+        this.sourceCurrency = sourceCurrency;
+        this.targetCurrency = targetCurrency;
+        this.exchangeRate = exchangeRate;
+    }
+
+    public FxRate() {
+    }
 
 }
