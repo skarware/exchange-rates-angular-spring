@@ -1,5 +1,6 @@
 package io.github.skarware.exchangerates.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.data.domain.Persistable;
 
@@ -30,11 +31,11 @@ public class CurrencyModel implements Persistable<Integer> {
     private final String alphabeticCode;
 
     public CurrencyModel(String alphabeticCode) {
-        this.alphabeticCode = alphabeticCode;
         // Get and assign ISO 4217 numeric code for given currency code. It is probably safe to do this as it is java.utils class
         int numericCode = java.util.Currency.getInstance(alphabeticCode).getNumericCode();
         if (numericCode > 0) {
             this.numericCode = numericCode;
+            this.alphabeticCode = alphabeticCode;
         } else {
             throw new IllegalArgumentException(String.valueOf(numericCode));
         }
@@ -47,11 +48,13 @@ public class CurrencyModel implements Persistable<Integer> {
         this.isNew = false;
     }
 
+    @JsonIgnore
     @Override
     public Integer getId() {
         return numericCode;
     }
 
+    @JsonIgnore
     @Override
     public boolean isNew() {
         return isNew;

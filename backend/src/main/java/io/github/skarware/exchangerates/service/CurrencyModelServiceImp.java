@@ -33,10 +33,10 @@ public class CurrencyModelServiceImp implements CurrencyModelService {
     @Override
     public CurrencyModel findByAlphabeticCode(String alphabeticCode) {
         // Check if alphabeticCode is valid ISO 4217 currency code
-        boolean isAlphabeticCodeValid = Currency.getAvailableCurrencies().stream().anyMatch(el -> el.getCurrencyCode().equals(alphabeticCode));
+        boolean isAlphabeticCodeValid = Currency.getAvailableCurrencies().stream().anyMatch(el -> el.getCurrencyCode().equals(alphabeticCode.toUpperCase()));
 
         if (isAlphabeticCodeValid) {
-            return currencyModelRepository.findById(Currency.getInstance(alphabeticCode).getNumericCode())
+            return currencyModelRepository.findById(Currency.getInstance(alphabeticCode.toUpperCase()).getNumericCode())
                     .orElseThrow(() -> new EntityNotFoundException(alphabeticCode));
         } else {
             throw new IllegalArgumentException(String.valueOf(alphabeticCode));
@@ -44,15 +44,16 @@ public class CurrencyModelServiceImp implements CurrencyModelService {
     }
 
     public CurrencyModel getOrMakeCurrencyModel(String currencyCode) {
+        String currencyCodeUpperCase = currencyCode.toUpperCase();
         String exceptionMsg;
         // Check if currency already exists in database, if not then instantiate new and return one
         try {
-            return findByAlphabeticCode(currencyCode);
+            return findByAlphabeticCode(currencyCodeUpperCase);
         } catch (EntityNotFoundException exc) {
             logger.debug("Currency not found in database: {}", exc.getMessage());
             // If currency not present in database try create the new and return
             try {
-                return new CurrencyModel(currencyCode);
+                return new CurrencyModel(currencyCodeUpperCase);
             } catch (IllegalArgumentException exception) {
                 exceptionMsg = exception.getMessage();
             }

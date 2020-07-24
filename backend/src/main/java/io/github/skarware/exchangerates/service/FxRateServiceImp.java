@@ -10,8 +10,12 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Service
 public class FxRateServiceImp implements FxRateService {
@@ -34,13 +38,36 @@ public class FxRateServiceImp implements FxRateService {
     }
 
     @Override
-    public Collection<FxRate> getAllByOrderByEffectiveDate() {
-        return fxRateRepository.getAllByOrderByEffectiveDate();
+    public FxRate findRxRateByDateBySourceCurrencyAndTargetCurrency(String date, String fromCurrency, String toCurrency) {
+        CurrencyModel sourceCurrency = currencyModelService.getOrMakeCurrencyModel(fromCurrency);
+        CurrencyModel targetCurrency = currencyModelService.getOrMakeCurrencyModel(toCurrency);
+        Date dateObj = null;
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            dateObj = formatter.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return fxRateRepository.findByEffectiveDateAndSourceCurrencyAndTargetCurrency(dateObj, sourceCurrency, targetCurrency);
     }
 
     @Override
-    public Collection<FxRate> getAllByEffectiveDateGreaterThanEqualOrderByEffectiveDateDesc(Date date) {
-        return fxRateRepository.getAllByEffectiveDateGreaterThanEqualOrderByEffectiveDateDesc(date);
+    public Collection<FxRate> find100LatestFxRatesBySourceCurrencyAndTargetCurrency(String fromCurrency, String toCurrency) {
+        CurrencyModel sourceCurrency = currencyModelService.getOrMakeCurrencyModel(fromCurrency);
+        CurrencyModel targetCurrency = currencyModelService.getOrMakeCurrencyModel(toCurrency);
+        return fxRateRepository.findFirst100BySourceCurrencyAndTargetCurrencyOrderByIdDesc(sourceCurrency, targetCurrency);
+    }
+
+    @Override
+    public Collection<FxRate> getFxRatesForToday() {
+        return fxRateRepository.findByEffectiveDate(Date.from(Instant.now()));
+    }
+
+    @Override
+    public Collection<FxRate> getFxRateByTargetCurrencyForToday(String targetCurrency) {
+        return this.getFxRatesForToday().stream()
+                .filter(el -> el.getTargetCurrency().getAlphabeticCode().equals(targetCurrency.toUpperCase()))
+                .collect(Collectors.toList());
     }
 
     // TODO: Should be possible to merge existing CurrencyModel obj with new FxRate obj before INSERT. Would save two SELECTS!

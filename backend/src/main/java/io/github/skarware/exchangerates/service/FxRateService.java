@@ -10,9 +10,13 @@ public interface FxRateService {
 
     FxRate findById(Long id);
 
-    Collection<FxRate> getAllByOrderByEffectiveDate();
+    FxRate findRxRateByDateBySourceCurrencyAndTargetCurrency(String effectiveDate, String fromCurrency, String toCurrency);
 
-    Collection<FxRate> getAllByEffectiveDateGreaterThanEqualOrderByEffectiveDateDesc(Date date);
+    Collection<FxRate> find100LatestFxRatesBySourceCurrencyAndTargetCurrency(String fromCurrency, String toCurrency);
+
+    Collection<FxRate> getFxRatesForToday();
+
+    Collection<FxRate> getFxRateByTargetCurrencyForToday(String targetCurrency);
 
     FxRate save(FxRate fxRate);
 
