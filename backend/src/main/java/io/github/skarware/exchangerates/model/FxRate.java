@@ -1,7 +1,6 @@
 package io.github.skarware.exchangerates.model;
 
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -32,15 +31,15 @@ public class FxRate {
     @Column(name = "exchange_rate", columnDefinition = "DECIMAL(20,10) UNSIGNED", nullable = false)
     private BigDecimal exchangeRate;
 
-    @CreationTimestamp
     @Temporal(TemporalType.DATE)
     @Column(name = "effective_date", columnDefinition = "DATE", nullable = false)
     private Date effectiveDate;
 
-    public FxRate(CurrencyModel sourceCurrency, CurrencyModel targetCurrency, BigDecimal exchangeRate) {
+    public FxRate(CurrencyModel sourceCurrency, CurrencyModel targetCurrency, BigDecimal exchangeRate, Date effectiveDate) {
         this.sourceCurrency = sourceCurrency;
         this.targetCurrency = targetCurrency;
         this.exchangeRate = exchangeRate;
+        this.effectiveDate = effectiveDate;
     }
 
     public FxRate() {
