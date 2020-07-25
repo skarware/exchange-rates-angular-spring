@@ -88,7 +88,7 @@ public class FetchFxRatesJobService {
             BigDecimal targetAmt = el.getCcyAmt().get(1).getAmt();
             BigDecimal exchangeRate = targetAmt.divide(sourceAmt, DECIMAL64);
             Date effectiveDate = el.getDt();
-            fxRateService.addFxRate(sourceCurrency, targetCurrency, exchangeRate, effectiveDate);
+            fxRateService.add(sourceCurrency, targetCurrency, exchangeRate, effectiveDate);
         });
     }
 }

@@ -12,7 +12,6 @@ import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -38,9 +37,9 @@ public class FxRateServiceImp implements FxRateService {
     }
 
     @Override
-    public FxRate findRxRateByDateBySourceCurrencyAndTargetCurrency(String date, String fromCurrency, String toCurrency) {
-        CurrencyModel sourceCurrency = currencyModelService.getOrMakeCurrencyModel(fromCurrency);
-        CurrencyModel targetCurrency = currencyModelService.getOrMakeCurrencyModel(toCurrency);
+    public FxRate getByDateBySourceCurrencyAndTargetCurrency(String date, String fromCurrency, String toCurrency) {
+        CurrencyModel sourceCurrency = currencyModelService.getOrMake(fromCurrency);
+        CurrencyModel targetCurrency = currencyModelService.getOrMake(toCurrency);
         Date dateObj = null;
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -52,25 +51,32 @@ public class FxRateServiceImp implements FxRateService {
     }
 
     @Override
-    public Collection<FxRate> find100LatestFxRatesBySourceCurrencyAndTargetCurrency(String fromCurrency, String toCurrency) {
-        CurrencyModel sourceCurrency = currencyModelService.getOrMakeCurrencyModel(fromCurrency);
-        CurrencyModel targetCurrency = currencyModelService.getOrMakeCurrencyModel(toCurrency);
+    public Collection<FxRate> getLatest100BySourceCurrencyAndTargetCurrency(String fromCurrency, String toCurrency) {
+        CurrencyModel sourceCurrency = currencyModelService.getOrMake(fromCurrency);
+        CurrencyModel targetCurrency = currencyModelService.getOrMake(toCurrency);
         return fxRateRepository.findFirst100BySourceCurrencyAndTargetCurrencyOrderByIdDesc(sourceCurrency, targetCurrency);
     }
 
     @Override
-    public Collection<FxRate> getFxRatesForToday() {
-        return fxRateRepository.findByEffectiveDate(Date.from(Instant.now()));
+    public Collection<FxRate> getLatestFxRates() {
+        Date latestDate = getLatestDataDate();
+        return fxRateRepository.findByEffectiveDate(latestDate);
     }
 
     @Override
-    public Collection<FxRate> getFxRateByTargetCurrencyForToday(String targetCurrency) {
-        return this.getFxRatesForToday().stream()
+    public Date getLatestDataDate() {
+        return fxRateRepository.selectDateFromFxRatesLimitOneOrderByIdDesc();
+    }
+
+    @Override
+    public Collection<FxRate> getLatestByTargetCurrency(String targetCurrency) {
+        return this.getLatestFxRates().stream()
                 .filter(el -> el.getTargetCurrency().getAlphabeticCode().equals(targetCurrency.toUpperCase()))
                 .collect(Collectors.toList());
     }
 
-    // TODO: Should be possible to merge existing CurrencyModel obj with new FxRate obj before INSERT. Would save two SELECTS!
+    // TODO: Should be possible to merge existing CurrencyModel obj with new FxRate obj before INSERT. Would eliminate two SELECTS!
+
     @Override
     public FxRate save(FxRate fxRate) {
         // Saving cascade for child CurrencyModel elements is not set, instead CurrencyModel save logic lays in it service implementation
@@ -85,10 +91,10 @@ public class FxRateServiceImp implements FxRateService {
     // TODO: implement saveAll and addFxRates versions, should be more efficient then multiple entity data fetched from API
 
     @Override
-    public FxRate addFxRate(String sourceCurrencyCode, String targetCurrencyCode, BigDecimal exchangeRate, Date effectiveDate) {
+    public FxRate add(String sourceCurrencyCode, String targetCurrencyCode, BigDecimal exchangeRate, Date effectiveDate) {
         // Check if source and target Currency Codes already exists in database, if not then make
-        CurrencyModel sourceCurrencyModel = currencyModelService.getOrMakeCurrencyModel(sourceCurrencyCode);
-        CurrencyModel targetCurrencyModel = currencyModelService.getOrMakeCurrencyModel(targetCurrencyCode);
+        CurrencyModel sourceCurrencyModel = currencyModelService.getOrMake(sourceCurrencyCode);
+        CurrencyModel targetCurrencyModel = currencyModelService.getOrMake(targetCurrencyCode);
 
         // If valid data returned proceed with saving it else abort save operation and return null
         if (sourceCurrencyModel != null && targetCurrencyModel != null) {

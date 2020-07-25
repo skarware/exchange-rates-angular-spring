@@ -43,7 +43,7 @@ public class CurrencyModelServiceImp implements CurrencyModelService {
         }
     }
 
-    public CurrencyModel getOrMakeCurrencyModel(String currencyCode) {
+    public CurrencyModel getOrMake(String currencyCode) {
         String currencyCodeUpperCase = currencyCode.toUpperCase();
         String exceptionMsg;
         // Check if currency already exists in database, if not then instantiate new and return one
@@ -83,9 +83,9 @@ public class CurrencyModelServiceImp implements CurrencyModelService {
     }
 
     @Override
-    public CurrencyModel addCurrencyModel(String currencyCode) {
+    public CurrencyModel add(String currencyCode) {
         // Check if source and target Currency Codes already exists in database, if not then make
-        CurrencyModel currencyModel = this.getOrMakeCurrencyModel(currencyCode);
+        CurrencyModel currencyModel = this.getOrMake(currencyCode);
 
         // If not null data returned save it else abort save operation and return null
         if (currencyModel != null) {

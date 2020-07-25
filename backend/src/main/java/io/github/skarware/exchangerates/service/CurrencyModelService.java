@@ -10,13 +10,13 @@ public interface CurrencyModelService {
 
     CurrencyModel findByAlphabeticCode(String alphabeticCode);
 
-    CurrencyModel getOrMakeCurrencyModel(String currencyCode);
+    CurrencyModel getOrMake(String currencyCode);
 
     Collection<CurrencyModel> getAllByOrderByAlphabeticCode();
 
     CurrencyModel save(CurrencyModel currencyModel);
 
-    CurrencyModel addCurrencyModel(String currencyCode);
+    CurrencyModel add(String currencyCode);
 
     // Convenience method, uses Example obj with passed CurrencyModel as probe (to match CurrencyModel properties, Alphabetic and Numeric codes)
     boolean exists(CurrencyModel currencyModel);
