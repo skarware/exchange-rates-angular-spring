@@ -5,3 +5,23 @@ table {
 th.mat-sort-header-sorted {
   color: black;
 }
+
+.mat-column-buttons {
+  width: min-content;
+  padding: 0 !important;
+}
+
+.mat-button {
+  padding: 0 !important;
+}
+
+mat-progress-bar {
+  padding: 15px;
+}
+
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+

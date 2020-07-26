@@ -1,7 +1,13 @@
 export class FxRate {
   id: number;
-  sourceCurrency: string;
-  targetCurrency: string;
+  sourceCurrency: {
+    numericCode: number;
+    alphabeticCode: string;
+  };
+  targetCurrency: {
+    numericCode: number;
+    alphabeticCode: string;
+  };
   exchangeRate: string;
   effectiveDate: string;
 }
