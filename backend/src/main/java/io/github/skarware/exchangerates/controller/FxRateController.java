@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "${cross.origin.url}")
 @RestController
 public class FxRateController {
 
@@ -28,9 +28,9 @@ public class FxRateController {
     }
 
     // Get latest FxRate/s by given target currency (source should be base currency, by default EUR)
-    @GetMapping("/api/fxrates/{targetCurrrency}")
-    public Collection<FxRate> getFxRateByTargetCurrencyForToday(@PathVariable String targetCurrrency) {
-        return fxRateService.getLatestByTargetCurrency(targetCurrrency);
+    @GetMapping("/api/fxrates/{targetCurrency}")
+    public FxRate getFxRateByTargetCurrencyForToday(@PathVariable String targetCurrency) {
+        return fxRateService.getLatestByTargetCurrency(targetCurrency);
     }
 
     // Get latest FxRates by given currencies

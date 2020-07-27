@@ -32,14 +32,17 @@ public class CurrencyModelServiceImp implements CurrencyModelService {
 
     @Override
     public CurrencyModel findByAlphabeticCode(String alphabeticCode) {
+        // UpperCase version used multiple times in the block
+        String alphabeticCodeUpperCase = alphabeticCode.toUpperCase();
+
         // Check if alphabeticCode is valid ISO 4217 currency code
-        boolean isAlphabeticCodeValid = Currency.getAvailableCurrencies().stream().anyMatch(el -> el.getCurrencyCode().equals(alphabeticCode.toUpperCase()));
+        boolean isAlphabeticCodeValid = Currency.getAvailableCurrencies().stream().anyMatch(el -> el.getCurrencyCode().equals(alphabeticCodeUpperCase));
 
         if (isAlphabeticCodeValid) {
-            return currencyModelRepository.findById(Currency.getInstance(alphabeticCode.toUpperCase()).getNumericCode())
-                    .orElseThrow(() -> new EntityNotFoundException(alphabeticCode));
+            return currencyModelRepository.findById(Currency.getInstance(alphabeticCodeUpperCase).getNumericCode())
+                    .orElseThrow(() -> new EntityNotFoundException(alphabeticCodeUpperCase));
         } else {
-            throw new IllegalArgumentException(String.valueOf(alphabeticCode));
+            throw new IllegalArgumentException(alphabeticCodeUpperCase);
         }
     }
 

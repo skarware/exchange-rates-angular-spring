@@ -18,7 +18,7 @@ public interface FxRateService {
 
     Date getLatestDataDate();
 
-    Collection<FxRate> getLatestByTargetCurrency(String targetCurrency);
+    FxRate getLatestByTargetCurrency(String targetCurrency);
 
     FxRate save(FxRate fxRate);
 

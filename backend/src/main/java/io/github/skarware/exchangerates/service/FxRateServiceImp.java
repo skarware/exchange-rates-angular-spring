@@ -14,7 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.stream.Collectors;
+import java.util.NoSuchElementException;
 
 @Service
 public class FxRateServiceImp implements FxRateService {
@@ -69,10 +69,14 @@ public class FxRateServiceImp implements FxRateService {
     }
 
     @Override
-    public Collection<FxRate> getLatestByTargetCurrency(String targetCurrency) {
-        return this.getLatestFxRates().stream()
-                .filter(el -> el.getTargetCurrency().getAlphabeticCode().equals(targetCurrency.toUpperCase()))
-                .collect(Collectors.toList());
+    public FxRate getLatestByTargetCurrency(String targetCurrency) {
+        int numericCode = currencyModelService.findByAlphabeticCode(targetCurrency).getNumericCode();
+        FxRate fxRate = fxRateRepository.selectFxRateByTargetCurrencyNumericCodeLimitOneOrderByIdDesc(numericCode);
+        if (fxRate != null) {
+            return fxRate;
+        } else {
+            throw new NoSuchElementException("FxRate by given target: '" + targetCurrency.toUpperCase() + "' not found.");
+        }
     }
 
     // TODO: Should be possible to merge existing CurrencyModel obj with new FxRate obj before INSERT. Would eliminate two SELECTS!

@@ -6,6 +6,7 @@ import io.github.skarware.exchangerates.dto.FxRatesDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,7 +23,8 @@ import static java.math.MathContext.DECIMAL64;
 @Service
 public class FetchFxRatesJobService {
 
-    private final URI FX_RATES_URI = new URI("http://www.lb.lt/webservices/FxRates/FxRates.asmx/getCurrentFxRates?tp=LT");
+    @Value("${fxrates.fetch.api.uri}")
+    private String FX_RATES_API_URI;
 
     private final FxRateService fxRateService;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -37,26 +39,26 @@ public class FetchFxRatesJobService {
 
         try {
             // Fetch FxRates from API
-            FxRatesDTO fxRatesDTO = fetchFxRates(FX_RATES_URI);
+            FxRatesDTO fxRatesDTO = this.fetchFxRates(new URI(FX_RATES_API_URI));
 
             // Remap data and add into database
-            addFxRates(fxRatesDTO);
+            this.addFxRates(fxRatesDTO);
 
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException | URISyntaxException e) {
             e.printStackTrace();
         }
 
         logger.info("Job has finished...");
     }
 
-    public FxRatesDTO fetchFxRates(URI URI) throws IOException, InterruptedException {
+    public FxRatesDTO fetchFxRates(URI fxRatesApiUri) throws IOException, InterruptedException {
 
         JacksonXmlModule module = new JacksonXmlModule();
         module.setDefaultUseWrapper(false);
         XmlMapper xmlMapper = new XmlMapper(module);
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI)
+                .uri(fxRatesApiUri)
                 .version(HttpClient.Version.HTTP_2)
                 .GET()
                 .build();
@@ -71,7 +73,7 @@ public class FetchFxRatesJobService {
             logger.info("response.statusCode() " + response.statusCode());
             return xmlMapper.readValue(response.body(), FxRatesDTO.class);
         } else {
-            logger.warn("Failed to fetch FxRates data from " + URI.toURL() + ", status code: " + response.statusCode());
+            logger.warn("Failed to fetch FxRates data from " + fxRatesApiUri.toURL() + ", status code: " + response.statusCode());
         }
         return null;
     }
