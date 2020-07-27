@@ -20,7 +20,7 @@ create table FX_RATES
 );
 
 -- auto-generated definition
-create sequence FX_RATES_SEQ start with 991 increment by 1;
+create sequence FX_RATES_SEQ start with 1261 increment by 1;
 
 
 
