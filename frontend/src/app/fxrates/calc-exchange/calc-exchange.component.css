@@ -7,3 +7,8 @@
   color: black;
 }
 
+.mat-spinner {
+  position: absolute;
+  left: 85%;
+  top: -25%;
+}

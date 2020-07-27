@@ -20,6 +20,7 @@ import { HeaderComponent } from './header/header.component';
 import { FxratesComponent } from './fxrates/fxrates.component';
 import { FxrateListComponent } from './fxrates/fxrate-list/fxrate-list.component';
 import { CalcExchangeComponent } from './fxrates/calc-exchange/calc-exchange.component';
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { CalcExchangeComponent } from './fxrates/calc-exchange/calc-exchange.com
     MatSortModule,
     MatProgressBarModule,
     MatSelectModule,
+    MatProgressSpinnerModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -11,8 +11,9 @@ import { CurrencyModel } from "../shared/currency.model";
   styleUrls: ['./calc-exchange.component.css']
 })
 export class CalcExchangeComponent implements OnInit, OnDestroy {
-  // Define Material progress-bar display/hide boolean
+  // Define Material progress-bar/spinner display/hide booleans
   public isLoading: boolean;
+  public isConverting: boolean;
 
   // Initialize as empty subscription then inside constructor block subscribe to currencyDTOExchange data changes
   private currencyExchangeDTOChangeSubscription: Subscription = Subscription.EMPTY;
@@ -52,6 +53,8 @@ export class CalcExchangeComponent implements OnInit, OnDestroy {
     if (formElement.invalid) {
       return;
     }
+    this.isConverting = true;
+
     const amount = formElement.value.amount;
     const commissionRate = formElement.value.commissionRate;
     const fromCurrency = formElement.value.fromCurrency.alphabeticCode;
@@ -61,7 +64,7 @@ export class CalcExchangeComponent implements OnInit, OnDestroy {
 
     this.currencyExchangeDTOChangeSubscription = this.calcExchangeService.getCurrencyExchangeChanges()
       .subscribe((newData: CurrencyExchangeDTO) => {
-        this.isLoading = false;
+        this.isConverting = false;
         // Then currencyDTOExchange[] Change update the dataSource with new data
         this.currencyExchangeDTO = newData;
       });
