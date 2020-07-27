@@ -1,13 +1,9 @@
-export class FxRate {
+import { CurrencyModel } from "./currency.model";
+
+export class CurrencyExchange {
   id: number;
-  sourceCurrency: {
-    numericCode: number;
-    alphabeticCode: string;
-  };
-  targetCurrency: {
-    numericCode: number;
-    alphabeticCode: string;
-  };
+  sourceCurrency: CurrencyModel;
+  targetCurrency: CurrencyModel;
   exchangeRate: string;
   effectiveDate: string;
 }

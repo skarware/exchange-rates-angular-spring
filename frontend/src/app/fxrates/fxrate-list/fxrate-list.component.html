@@ -1,9 +1,9 @@
-<mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
-
-<mat-form-field>
-  <mat-label>Filter</mat-label>
+<mat-form-field appearance="fill">
+  <mat-label>Filter Criteria</mat-label>
   <input matInput (keyup)="applyFilter($event)" placeholder="Ex. GBP" #input>
 </mat-form-field>
+
+<mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
 
 <div class="mat-elevation-z8" *ngIf="dataSource?.filteredData">
 

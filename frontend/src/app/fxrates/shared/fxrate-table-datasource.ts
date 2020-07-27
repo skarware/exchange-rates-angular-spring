@@ -1,6 +1,6 @@
 import { MatTableDataSource } from '@angular/material/table';
 import { _isNumberValue } from '@angular/cdk/coercion';
-import { FxRate } from './fxrate.model';
+import { CurrencyExchange } from './fxrate.model';
 
 // Custom nested objects DataSource class for Material table
 class NestedObjectsDataSource<T> extends MatTableDataSource<T> {
@@ -52,8 +52,8 @@ class NestedObjectsDataSource<T> extends MatTableDataSource<T> {
 }
 
 // Specific FxRate implementation of NestedObjectsDataSource
-export class FxRateMatTableDataSource extends NestedObjectsDataSource<FxRate> {
-  constructor(initialData: FxRate[]) {
+export class FxRateMatTableDataSource extends NestedObjectsDataSource<CurrencyExchange> {
+  constructor(initialData: CurrencyExchange[]) {
     super(initialData);
   }
 }

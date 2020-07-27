@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Subscription } from 'rxjs';
 
-import { FxRate } from '../shared/fxrate.model';
+import { CurrencyExchange } from '../shared/fxrate.model';
 import { FxRateService } from '../shared/fxrate.service';
 import { FxRateMatTableDataSource } from '../shared/fxrate-table-datasource';
 
@@ -61,7 +61,7 @@ export class FxrateListComponent implements OnInit, OnDestroy {
     // Subscribe to the fxRatesChange EventEmitter and listen for new data
     this.fxRatesChangeSubscription = this.fxRateService
       .getFxRatesChanges()
-      .subscribe((newFxRatesData: FxRate[]) => {
+      .subscribe((newFxRatesData: CurrencyExchange[]) => {
         this.isLoading = false;
         // Then fxRates Change update the dataSource with new data
         this.updateFxRateDataSource(newFxRatesData);
@@ -74,7 +74,7 @@ export class FxrateListComponent implements OnInit, OnDestroy {
   }
 
   // Fn to update Material table dataSource and its attributes
-  private updateFxRateDataSource(fxRates: FxRate[]): void {
+  private updateFxRateDataSource(fxRates: CurrencyExchange[]): void {
     this.dataSource = new FxRateMatTableDataSource(fxRates);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;

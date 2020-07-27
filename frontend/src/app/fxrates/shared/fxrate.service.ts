@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { FxRate } from './fxrate.model';
+import { CurrencyExchange } from './fxrate.model';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -17,15 +17,15 @@ export class FxRateService implements OnDestroy {
     }
 
     // Initialize fxRates array as empty before fetching data from dataSource
-    private fxRates: FxRate[] = [];
+    private fxRates: CurrencyExchange[] = [];
 
     // Initialize Observable to multicast changes on this.fxRates data
-    private fxRatesChanges: Subject<FxRate[]> = new Subject<FxRate[]>();
+    private fxRatesChanges: Subject<CurrencyExchange[]> = new Subject<CurrencyExchange[]>();
 
     // Fetch FxRate data from database through API
     fetchFxRates(): void {
       // Get fxRates data from API
-      this.http.get<FxRate[]>(BACKEND_HOST_URL + API_PATH)
+      this.http.get<CurrencyExchange[]>(BACKEND_HOST_URL + API_PATH)
         .subscribe((response) => {
           // Assign new data to fxRates array; and multicast it to fxRatesChanges observers/subscribers
           this.fxRates = response;
@@ -34,7 +34,7 @@ export class FxRateService implements OnDestroy {
     }
 
     // Return Observable for Observers to subscribe for new this.fxRates data
-    getFxRatesChanges(): Observable<FxRate[]> {
+    getFxRatesChanges(): Observable<CurrencyExchange[]> {
       return this.fxRatesChanges.asObservable();
     }
 

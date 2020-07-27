@@ -13,12 +13,13 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-
+import { MatSelectModule } from '@angular/material/select';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { FxratesComponent } from './fxrates/fxrates.component';
 import { FxrateListComponent } from './fxrates/fxrate-list/fxrate-list.component';
+import { CalcExchangeComponent } from './fxrates/calc-exchange/calc-exchange.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { FxrateListComponent } from './fxrates/fxrate-list/fxrate-list.component
     HeaderComponent,
     FxratesComponent,
     FxrateListComponent,
+    CalcExchangeComponent,
   ],
   imports: [
     BrowserModule,
@@ -40,9 +42,10 @@ import { FxrateListComponent } from './fxrates/fxrate-list/fxrate-list.component
     MatPaginatorModule,
     MatTableModule,
     MatSortModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatSelectModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
