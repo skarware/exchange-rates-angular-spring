@@ -6,7 +6,10 @@
     <div class="input-data-container">
 
       <mat-form-field appearance="fill" hideRequiredMarker>
-        <mat-label><mat-icon>monetization_on</mat-icon> Amount to convert</mat-label>
+        <mat-label>
+          <mat-icon>monetization_on</mat-icon>
+          Amount to convert
+        </mat-label>
         <input matInput type="number" maxlength="10" placeholder="Ex. 100" required
                name="amount"
                #amount="ngModel"
@@ -62,7 +65,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="fill">
-          <mat-spinner [diameter]="25" *ngIf="isConverting"></mat-spinner>
+        <mat-spinner [diameter]="25" *ngIf="isConverting"></mat-spinner>
         <mat-label>Exchange fee</mat-label>
         <input class="disabled" matInput disabled
                name="exchangeFee"
@@ -71,6 +74,10 @@
         <mat-hint align="end">Output for Exchange fee</mat-hint>
       </mat-form-field>
 
+    </div>
+
+    <div class="from-to-ratio-container" *ngIf="currencyExchangeDTO?.from && currencyExchangeDTO?.to">
+      <span>{{'1 ' + currencyExchangeDTO?.from + ' = ' + currencyExchangeDTO?.conversionRatio + ' ' + currencyExchangeDTO?.to}}</span>
     </div>
 
   </form>

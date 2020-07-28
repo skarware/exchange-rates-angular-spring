@@ -24,7 +24,7 @@ export class CalcExchangeComponent implements OnInit, OnDestroy {
   // Initialize as empty subscription then inside constructor block subscribe to currencyOptions data changes
   private currencyOptionsChangeSubscription: Subscription = Subscription.EMPTY;
 
-  // currencyOptions = ["USD", "EUR", "GBP", ...];
+  // "EUR", "USD", "GBP", ...
   currencyOptions: CurrencyModel[];
 
   // Inject calcExchangeService into this component as private class member

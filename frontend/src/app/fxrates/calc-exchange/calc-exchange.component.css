@@ -12,3 +12,17 @@
   left: 85%;
   top: -25%;
 }
+
+.result-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 0 2rem 0;
+}
+
+.from-to-ratio-container {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: large;
+  font-weight: bold;
+}

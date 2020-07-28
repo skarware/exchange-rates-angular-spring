@@ -9,6 +9,7 @@ public class CurrencyExchangeDTO {
     private final String amount;
     private final String from;
     private final String to;
+    private final String conversionRatio;
     private final String convertedAmount;
     private final String commissionRate;
     private final String exchangeFee;

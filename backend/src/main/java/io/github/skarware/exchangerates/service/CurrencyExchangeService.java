@@ -55,28 +55,29 @@ public class CurrencyExchangeService {
             String fromCurrencyUpperCase = fromCurrency.toUpperCase();
             String toCurrencyUpperCase = toCurrency.toUpperCase();
 
-            // Convert given amount from source currency to target currency
-            BigDecimal convertedAmount = convertCurrency(bdAmount, fromCurrencyUpperCase, toCurrencyUpperCase);
+            // Calc conversion rate then calc the converted given amount from source currency to target currency
+            BigDecimal conversionRatio = calcConversionRatio(fromCurrencyUpperCase, toCurrencyUpperCase);
+            BigDecimal convertedAmount = calcConvertedAmount(bdAmount, conversionRatio);
 
+            // If there was no errors in procedure then convertedAmount should be not null but if there was any fault play then throw IllegalArgumentException
             if (convertedAmount != null) {
                 // Usually there is a commission fee on currency exchange, fortunately/sorrowful for this task's imaginary user/banker it is 0
                 BigDecimal exchangeFee = calcExchangeFee(convertedAmount, commissionRate);
 
-                // Format the result up to 18 decimal places hiding more than 2 zeros
-                DecimalFormat df = new DecimalFormat("0.00");
-//                DecimalFormat df = new DecimalFormat();
-//                df.setMaximumFractionDigits(2);
-//                df.setMinimumFractionDigits(2);
-                df.setRoundingMode(ROUNDING_MODE);
+                // Format the result to fixed 2 decimal places
+                DecimalFormat format2FixedDecimalPlaces = new DecimalFormat("0.00");
+                DecimalFormat formatUpTo5DecimalPlaces = new DecimalFormat("0.#####");
+                format2FixedDecimalPlaces.setRoundingMode(ROUNDING_MODE);
 
                 // Return CurrencyExchangeDTO to a controller who will return object in JSON format
                 return new CurrencyExchangeDTO(
-                        df.format(bdAmount),
+                        format2FixedDecimalPlaces.format(bdAmount),
                         fromCurrencyUpperCase,
                         toCurrencyUpperCase,
-                        df.format(convertedAmount),
-                        df.format(commissionRate),
-                        df.format(exchangeFee),
+                        formatUpTo5DecimalPlaces.format(conversionRatio),
+                        format2FixedDecimalPlaces.format(convertedAmount),
+                        formatUpTo5DecimalPlaces.format(commissionRate),
+                        format2FixedDecimalPlaces.format(exchangeFee),
                         FX_RATES_API_URI
                 );
             } else {
@@ -90,8 +91,19 @@ public class CurrencyExchangeService {
         }
     }
 
-    // To be on the safe side method parameters should accept currency names as strings
-    private BigDecimal convertCurrency(BigDecimal amount, String fromCurrency, String toCurrency) {
+    // If passed currency is base currency don't look for FxRate in database but create on the fly with exchangeRate of 1
+    private FxRate getOrMakeFxRate(String currency) {
+        if (currency.equals(BASE_CURRENCY)) {
+            logger.info("Creating base Currency on the fly, because given currency ({}) == base currency ({})", currency, BASE_CURRENCY);
+            return new FxRate(new CurrencyModel("EUR"), new CurrencyModel("EUR"), BigDecimal.ONE, fxRateService.getLatestDataDate());
+        } else {
+            // Else get FxRate by target currency from database
+            return fxRateService.getLatestByTargetCurrency(currency);
+        }
+    }
+
+    private BigDecimal calcConversionRatio(String fromCurrency, String toCurrency) {
+        // Try to get or make FxRates from given Currency strings
         try {
             // Initialize FxRates for fromCurrency and toCurrency
             FxRate from = getOrMakeFxRate(fromCurrency);
@@ -109,41 +121,27 @@ public class CurrencyExchangeService {
                 return null;
             }
 
-            // Calc conversion rate then calc the converted amount into new currency
-            BigDecimal conversionRatio = calcConversionRatio(from, to);
-            BigDecimal convertedAmount = calcConvertedAmount(amount, conversionRatio);
+            // Get exchange rates for currencies
+            BigDecimal fromRate = from.getExchangeRate();
+            BigDecimal toRate = to.getExchangeRate();
 
-            // Round up to SCALE (18) decimal places using ROUNDING_MODE (HALF_UP)
-            return convertedAmount.setScale(SCALE, ROUNDING_MODE);
+            // Calculate Ratio and return it
+            return toRate.divide(fromRate, MATH_CONTEXT);
 
         } catch (NoSuchElementException exc) {
             // TODO: make and throw customized exceptions
             logger.warn("Currency converting failed fromCurrency: {}, toCurrency: {}, error msg: {}", fromCurrency, toCurrency, exc.getMessage());
         }
-        // Should not reach this point buf if do then return null as error
+        // If this point is reached then return null as an error
         return null;
     }
 
-    // If passed currency is base currency don't look for FxRate in database but create on the fly with exchangeRate of 1
-    private FxRate getOrMakeFxRate(String currency) {
-        if (currency.equals(BASE_CURRENCY)) {
-            logger.info("Creating base Currency on the fly, because given currency ({}) == base currency ({})", currency, BASE_CURRENCY);
-            return new FxRate(new CurrencyModel("EUR"), new CurrencyModel("EUR"), BigDecimal.ONE, fxRateService.getLatestDataDate());
-        } else {
-            // Else get FxRate by target currency from database
-            return fxRateService.getLatestByTargetCurrency(currency);
-        }
-    }
-
     public static BigDecimal calcConvertedAmount(BigDecimal amount, BigDecimal conversionRatio) {
-        return amount.multiply(conversionRatio, MATH_CONTEXT);
-    }
-
-    public static BigDecimal calcConversionRatio(FxRate from, FxRate to) {
-        BigDecimal fromRate = from.getExchangeRate();
-        BigDecimal toRate = to.getExchangeRate();
-        // Calculate Ratio and return
-        return toRate.divide(fromRate, MATH_CONTEXT);
+        // If conversionRatio is null return null too as an error
+        if (conversionRatio != null) {
+            return amount.multiply(conversionRatio, MATH_CONTEXT);
+        }
+        return null;
     }
 
     public static BigDecimal calcExchangeFee(BigDecimal amount, BigDecimal commissionRate) {
