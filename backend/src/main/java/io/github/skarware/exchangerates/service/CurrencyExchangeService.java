@@ -49,7 +49,7 @@ public class CurrencyExchangeService {
             BigDecimal bdAmount = new BigDecimal(NumberUtils.toDotDecimalSeparator(amount));
 
             // Get commissionRateStr as integer
-            int commissionRate = Integer.parseInt(commissionRateStr);
+            BigDecimal commissionRate = new BigDecimal(NumberUtils.toDotDecimalSeparator(commissionRateStr));
 
             // Convert currencies alphabetic codes to upper case
             String fromCurrencyUpperCase = fromCurrency.toUpperCase();
@@ -146,12 +146,7 @@ public class CurrencyExchangeService {
         return toRate.divide(fromRate, MATH_CONTEXT);
     }
 
-    public static BigDecimal calcExchangeFee(BigDecimal amount, double commissionRate) {
-        /*
-          Note that BigDecimal's valueOf method converts double to its String representation before converting to BigDecimal,
-          therefor it is safer then using double constructor as some Real numbers, like 0.01, does not have an exact representation
-          in double type so the result in those cases will differ from expected.
-         */
-        return amount.multiply(BigDecimal.valueOf(commissionRate).divide(BigDecimal.valueOf(100), MATH_CONTEXT), MATH_CONTEXT);
+    public static BigDecimal calcExchangeFee(BigDecimal amount, BigDecimal commissionRate) {
+        return amount.multiply(commissionRate.divide(BigDecimal.valueOf(100), MATH_CONTEXT), MATH_CONTEXT);
     }
 }
