@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Subscription } from 'rxjs';
 
-import { CurrencyExchange } from '../shared/fxrate.model';
+import { FxRate } from '../shared/fxrate.model';
 import { FxRateService } from '../shared/fxrate.service';
 import { FxRateMatTableDataSource } from '../shared/fxrate-table-datasource';
 
@@ -35,14 +35,14 @@ export class FxrateListComponent implements OnInit, OnDestroy {
   private paginator: MatPaginator;
   private sort: MatSort;
 
-  @ViewChild(MatSort, { static: false }) set matSort(ms: MatSort) {
+  @ViewChild(MatSort, {static: false}) set matSort(ms: MatSort) {
     this.sort = ms;
     if (this.sort) {
       this.dataSource.sort = this.sort;
     }
   }
 
-  @ViewChild(MatPaginator, { static: false }) set matPaginator(
+  @ViewChild(MatPaginator, {static: false}) set matPaginator(
     mp: MatPaginator
   ) {
     this.paginator = mp;
@@ -52,7 +52,8 @@ export class FxrateListComponent implements OnInit, OnDestroy {
   }
 
   // Inject FxRateService into this component as private class member
-  constructor(private fxRateService: FxRateService) {}
+  constructor(private fxRateService: FxRateService) {
+  }
 
   ngOnInit(): void {
     this.isLoading = true;
@@ -61,7 +62,7 @@ export class FxrateListComponent implements OnInit, OnDestroy {
     // Subscribe to the fxRatesChange EventEmitter and listen for new data
     this.fxRatesChangeSubscription = this.fxRateService
       .getFxRatesChanges()
-      .subscribe((newFxRatesData: CurrencyExchange[]) => {
+      .subscribe((newFxRatesData: FxRate[]) => {
         this.isLoading = false;
         // Then fxRates Change update the dataSource with new data
         this.updateFxRateDataSource(newFxRatesData);
@@ -74,7 +75,7 @@ export class FxrateListComponent implements OnInit, OnDestroy {
   }
 
   // Fn to update Material table dataSource and its attributes
-  private updateFxRateDataSource(fxRates: CurrencyExchange[]): void {
+  private updateFxRateDataSource(fxRates: FxRate[]): void {
     this.dataSource = new FxRateMatTableDataSource(fxRates);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;

@@ -1,10 +1,10 @@
 export class CurrencyExchangeDTO {
-  amount: string;
+  amount: number;
   from: string;
   to: string;
-  conversionRatio: string;
-  convertedAmount: string;
-  commissionRate: string;
-  exchangeFee: string;
+  conversionRatio: number;
+  convertedAmount: number;
+  commissionRate: number;
+  exchangeFee: number;
   fxRatesSource: string;
 }
