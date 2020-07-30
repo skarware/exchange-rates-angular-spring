@@ -1,5 +1,39 @@
+.container {
+  position: relative;
+  min-height: 200px;
+}
+
+.table-container {
+  position: relative;
+  overflow: auto;
+}
+
 table {
   width: 100%;
+}
+
+.loading-shade {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*Because mat-toolbar-row height changes to from 64 to 56 pixels then with < 600px */
+@media (max-width: 599px) {
+  .loading-shade {
+    top: 56px;
+  }
+}
+
+.filter-container {
+  margin-top: 2rem;
 }
 
 th.mat-sort-header-sorted {

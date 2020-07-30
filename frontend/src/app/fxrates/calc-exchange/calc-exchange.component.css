@@ -1,19 +1,44 @@
 .container {
+  position: relative;
+  min-height: 200px;
+}
+
+.loading-shade {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/*Because mat-toolbar-row height changes to from 64 to 56 pixels then with < 600px */
+@media (max-width: 599px) {
+  .loading-shade {
+    top: 56px;
+  }
+}
+
+.input-data-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
 .container .mat-form-field {
-  margin-left: 8px;
-  margin-bottom: 1rem;
+  margin: 0.5rem 8px;
 }
 
 .disabled {
   color: black;
 }
 
-.mat-spinner {
+.result-container .mat-spinner {
   position: absolute;
   left: 85%;
   top: -25%;
@@ -23,7 +48,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 1rem 0 2rem 0;
+  margin: 1rem auto;
 }
 
 .from-to-ratio-container {

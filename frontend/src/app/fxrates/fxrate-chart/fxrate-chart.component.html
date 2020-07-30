@@ -1,4 +1,9 @@
-<div>
+<div class="loading-shade" *ngIf="isLoading">
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+</div>
+
+<div class="container" *ngIf="!isLoading">
+
   <div style="display: block">
     <canvas baseChart
             [datasets]="lineChartData"
@@ -8,4 +13,5 @@
             [chartType]="lineChartType">
     </canvas>
   </div>
+
 </div>

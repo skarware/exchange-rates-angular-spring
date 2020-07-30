@@ -1,7 +1,10 @@
-<div class="container">
-  <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+<div class="loading-shade" *ngIf="isLoading">
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+</div>
 
-  <form (keyup)="onAmountInput(formElement)" #formElement="ngForm" *ngIf="!isLoading">
+<div class="container" *ngIf="!isLoading">
+
+  <form (keyup)="onAmountInput(formElement)" #formElement="ngForm">
 
     <div class="input-data-container">
 
