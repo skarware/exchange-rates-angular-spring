@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Label } from "ng2-charts";
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { BaseChartDirective, Color, Label } from "ng2-charts";
 import { ChartDataSets, ChartOptions } from "chart.js";
 import { FxRateService } from "../shared/fxrate.service";
 import { ActivatedRoute, ParamMap } from "@angular/router";
@@ -24,6 +24,12 @@ export class FxrateChartComponent implements OnInit {
           unit: 'day'
         }
       }],
+      yAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Exchange Rates'
+        }
+      }]
     },
     elements: {
       line: {
@@ -46,10 +52,27 @@ export class FxrateChartComponent implements OnInit {
     }
   };
   public lineChartLegend = true;
+  public lineChartColors: Color[] = [
+    {
+      backgroundColor: 'rgb(0,255,0, 0.3)',
+      borderColor: 'green',
+    },
+    {
+      backgroundColor: 'rgb(0,0,255, 0.3)',
+      borderColor: 'blue',
+    },
+    {
+      backgroundColor: 'rgba(255,0,0,0.3)',
+      borderColor: 'red',
+    }
+  ];
 
   // Define Chart data and labels with empty arrays or embrace for errors
   public lineChartLabels: Label[] = [];
   public lineChartData: ChartDataSets[] = [];
+
+  //
+  @ViewChild(BaseChartDirective, {static: false}) chart: BaseChartDirective;
 
   // Inject FxRateService into this component as private class member
   constructor(
@@ -91,10 +114,17 @@ export class FxrateChartComponent implements OnInit {
       .subscribe((response) => {
         // Given wrong parameter returned array may be empty so need to check
         if (response != null && response.length > 0) {
+
           // Add a curve into the chart
           this.addCurveToChart(response);
+
           // After first curve added to the chart loading icon can be disabled
           this.isLoading = false;
+
+          // Update chart curve colors after new data pushed into ChartDataSets,
+          // '?' because this.chart will be undefined until first data is pushed into ChartDataSets
+          this.chart?.updateColors();
+
         } else {
           // TODO: some error message to the UI about invalid target currency
           console.log("Invalid target currency given");
