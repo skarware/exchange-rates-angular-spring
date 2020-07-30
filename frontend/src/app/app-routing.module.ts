@@ -10,6 +10,7 @@ const routes: Routes = [
   { path: '', component: FxratesComponent },
   { path: 'fxrate-list', component: FxrateListComponent },
   { path: 'calc-exchange', component: CalcExchangeComponent },
+  { path: 'fxrate-chart', component: FxrateChartComponent },
   { path: 'fxrate-chart/:currency', component: FxrateChartComponent }
 ];
 

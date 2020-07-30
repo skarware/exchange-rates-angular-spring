@@ -1,11 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Label } from "ng2-charts";
 import { ChartDataSets, ChartOptions } from "chart.js";
 import { FxRateService } from "../shared/fxrate.service";
-import { ActivatedRoute, ParamMap, Router } from "@angular/router";
+import { ActivatedRoute, ParamMap } from "@angular/router";
 import { FxRate } from "../shared/fxrate.model";
-
-const BASE_CURRENCY = 'EUR';
 
 @Component({
   selector: 'app-fxrate-chart',
@@ -13,11 +11,8 @@ const BASE_CURRENCY = 'EUR';
   styleUrls: ['./fxrate-chart.component.css']
 })
 export class FxrateChartComponent implements OnInit {
-  // Define Material progress-bar display/hide boolean
+  // Define Material spinner display/hide boolean
   public isLoading: boolean;
-
-  // Set up targetCurrency
-  private targetCurrency: string;
 
   public lineChartType = 'line';
   public lineChartOptions: ChartOptions = {
@@ -30,51 +25,85 @@ export class FxrateChartComponent implements OnInit {
         }
       }],
     },
+    elements: {
+      line: {
+        tension: 0 // disabling bezier curves will improve render times since drawing a straight line is more performant than a bezier curve
+      }
+    },
+    tooltips: {
+      intersect: false,
+      mode: 'index',
+      callbacks: {
+        label: function (tooltipItem, myData) {
+          let label = myData.datasets[tooltipItem.datasetIndex].label || '';
+          if (label) {
+            label += ': ';
+          }
+          label += parseFloat(tooltipItem.value)//.toFixed(4);
+          return label;
+        }
+      }
+    }
   };
   public lineChartLegend = true;
 
-  // Initialize Chart data and labels with empty arrays or embrace for errors
-  public lineChartLabels: Label[] = null;
-  public lineChartData: ChartDataSets[] = [{data: [], label: ''}];
+  // Define Chart data and labels with empty arrays or embrace for errors
+  public lineChartLabels: Label[] = [];
+  public lineChartData: ChartDataSets[] = [];
 
   // Inject FxRateService into this component as private class member
   constructor(
     private fxRateService: FxRateService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
   ) {
   }
 
   ngOnInit(): void {
     this.isLoading = true;
     // Look for parameters in URL path
-    // this.targetCurrency = this.activatedRoute.snapshot.paramMap.get('currency');
     this.activatedRoute.paramMap
       // Then param change callback function executed
       .subscribe((paramMap: ParamMap) => {
-        // Get param for fetching FxRate data
-        this.targetCurrency = paramMap.get('currency').toUpperCase();
-        // Fetch latest FxRate[] by given target currency string
-        this.fxRateService.fetchLatestFxRatesByTargetCurrency(this.targetCurrency)
-          .subscribe((response) => {
-            if (response != null && response.length > 0) {
-              // and push new chart into
-              this.addCurveToChart(response);
-              this.isLoading = false;
-            } else if (this.targetCurrency === BASE_CURRENCY) {
-              // TODO: if BASE_CURRENCY given as param show how base currency relate to other currencies
-              console.log("Get ready for some action")
-            } else {
-              // Redirect back to home path
-              this.router.navigate(['/'])
-                .then(r => console.log("Invalid param given, redirecting back to home page"));
-            }
-          });
+        if (paramMap.has('currency')) {
+
+          // If currency param exists set up component into single currency view mode
+          // this.isViewModeSingleCurrency = true;
+
+          // Get param for fetching FxRate data
+          const targetCurrency = paramMap.get('currency').toUpperCase();
+          this.fetchAndAddCurveToChart(targetCurrency);
+
+        } else {
+          // TODO: Make non-parameter chart page dynamical, let the use choose from 1 to 3 currencies, how they relate base currency
+
+          // show how base currency relate to other currencies
+          this.fetchAndAddCurveToChart('USD');
+          this.fetchAndAddCurveToChart('GBP');
+          this.fetchAndAddCurveToChart('CAD');
+
+        }
+      });
+  }
+
+  private fetchAndAddCurveToChart(targetCurrency: string) {
+    // Fetch latest FxRate[] by given string of target currency
+    this.fxRateService.fetchLatestFxRatesByTargetCurrency(targetCurrency)
+      .subscribe((response) => {
+        // Given wrong parameter returned array may be empty so need to check
+        if (response != null && response.length > 0) {
+          // Add a curve into the chart
+          this.addCurveToChart(response);
+          // After first curve added to the chart loading icon can be disabled
+          this.isLoading = false;
+        } else {
+          // TODO: some error message to the UI about invalid target currency
+          console.log("Invalid target currency given");
+        }
       });
   }
 
   private addCurveToChart(fxRates: FxRate[]) {
-    // Define local labels and chartDataSet
+    // Define local Label and ChartDataSets
     const labels: Label[] = [];
     const chartDataSet: ChartDataSets = {data: [], label: ''};
 
@@ -88,17 +117,13 @@ export class FxrateChartComponent implements OnInit {
       labels.push(date);
     })
 
-    // Set Label for chartDataSet
-    chartDataSet.label = BASE_CURRENCY + '/' + this.targetCurrency;
+    // Set curves Label for chartDataSet
+    chartDataSet.label = fxRates[0].sourceCurrency.alphabeticCode + '/' + fxRates[0].targetCurrency.alphabeticCode;
 
-    // If this.lineChartData's first element is empty data arr then overwrite it, else push additional curve to the graph
-    if (this.lineChartData[0].data === []) {
-      this.lineChartData.push(chartDataSet);
-    } else {
-      this.lineChartData = [chartDataSet];
-    }
+    // Push chartDataSet into this.lineChartData to draw curve on the graph
+    this.lineChartData.push(chartDataSet);
 
-    // In any case it should be ok to overwrite labels as it should be the same in theory...
+    // Overwrite labels as it should be the same for every additional curve
     this.lineChartLabels = labels;
   }
 }

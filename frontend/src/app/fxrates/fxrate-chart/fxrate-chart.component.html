@@ -2,7 +2,7 @@
   <mat-spinner *ngIf="isLoading"></mat-spinner>
 </div>
 
-<div class="container" *ngIf="!isLoading">
+<div class="container" *ngIf="lineChartData[0]?.data">
 
   <div style="display: block">
     <canvas baseChart
