@@ -12,6 +12,14 @@ table {
   width: 100%;
 }
 
+tr.element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
 .loading-shade {
   position: absolute;
   top: 64px;

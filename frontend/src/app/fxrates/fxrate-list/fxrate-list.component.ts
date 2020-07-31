@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { FxRate } from '../shared/fxrate.model';
 import { FxRateService } from '../shared/fxrate.service';
 import { FxRateMatTableDataSource } from '../shared/fxrate-table-datasource';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-fxrate-list',
@@ -52,7 +53,7 @@ export class FxrateListComponent implements OnInit, OnDestroy {
   }
 
   // Inject FxRateService into this component as private class member
-  constructor(private fxRateService: FxRateService) {
+  constructor(private fxRateService: FxRateService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -84,5 +85,10 @@ export class FxrateListComponent implements OnInit, OnDestroy {
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  RowSelected(row: any) {
+    this.router.navigateByUrl(`/fxrate-chart/${row.targetCurrency.alphabeticCode}`);
+    // this.router.navigate(['/fxrate-chart',row.targetCurrency.alphabeticCode]);
   }
 }
