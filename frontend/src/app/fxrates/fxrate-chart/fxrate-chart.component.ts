@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { BaseChartDirective, Color, Label } from "ng2-charts";
 import { ChartDataSets, ChartOptions } from "chart.js";
 import { FxRateService } from "../shared/fxrate.service";
@@ -8,7 +8,7 @@ import { FxRate } from "../shared/fxrate.model";
 @Component({
   selector: 'app-fxrate-chart',
   templateUrl: './fxrate-chart.component.html',
-  styleUrls: ['./fxrate-chart.component.css']
+  styleUrls: [ './fxrate-chart.component.css' ]
 })
 export class FxrateChartComponent implements OnInit {
   // Define Material spinner display/hide boolean
@@ -18,18 +18,18 @@ export class FxrateChartComponent implements OnInit {
   public lineChartOptions: ChartOptions = {
     responsive: true,
     scales: {
-      xAxes: [{
+      xAxes: [ {
         type: 'time',
         time: {
           unit: 'day'
         }
-      }],
-      yAxes: [{
+      } ],
+      yAxes: [ {
         scaleLabel: {
           display: true,
           labelString: 'Exchange Rates'
         }
-      }]
+      } ]
     },
     elements: {
       line: {
@@ -72,7 +72,10 @@ export class FxrateChartComponent implements OnInit {
   public lineChartData: ChartDataSets[] = [];
 
   //
-  @ViewChild(BaseChartDirective, {static: false}) chart: BaseChartDirective;
+  @ViewChild(BaseChartDirective, { static: false }) chart: BaseChartDirective;
+
+  // Input bound property comes from ModalContainerComponent
+  @Input() modalCurrencyParam;
 
   // Inject FxRateService into this component as private class member
   constructor(
@@ -96,7 +99,13 @@ export class FxrateChartComponent implements OnInit {
           const targetCurrency = paramMap.get('currency').toUpperCase();
           this.fetchAndAddCurveToChart(targetCurrency);
 
+        } else if (this.modalCurrencyParam) {
+
+          // else if component is in modal view mode show chart for given currency in param
+          this.fetchAndAddCurveToChart(this.modalCurrencyParam);
+
         } else {
+
           // TODO: Make non-parameter chart page dynamical, let the use choose from 1 to 3 currencies, how they relate base currency
 
           // show how base currency relate to other currencies
@@ -135,7 +144,7 @@ export class FxrateChartComponent implements OnInit {
   private addCurveToChart(fxRates: FxRate[]) {
     // Define local Label and ChartDataSets
     const labels: Label[] = [];
-    const chartDataSet: ChartDataSets = {data: [], label: ''};
+    const chartDataSet: ChartDataSets = { data: [], label: '' };
 
     fxRates.forEach((fxRate, index) => {
       // Extract currencies exchange rate and effective date

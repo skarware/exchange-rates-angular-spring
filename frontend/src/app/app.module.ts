@@ -16,6 +16,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ChartsModule } from "ng2-charts";
+import { MatDialogModule } from "@angular/material/dialog";
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -23,6 +24,7 @@ import { FxratesComponent } from './fxrates/fxrates.component';
 import { FxrateListComponent } from './fxrates/fxrate-list/fxrate-list.component';
 import { CalcExchangeComponent } from './fxrates/calc-exchange/calc-exchange.component';
 import { FxrateChartComponent } from './fxrates/fxrate-chart/fxrate-chart.component';
+import { ModalContainerComponent } from './fxrates/fxrate-chart/shared/modal-container.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +34,7 @@ import { FxrateChartComponent } from './fxrates/fxrate-chart/fxrate-chart.compon
     FxrateListComponent,
     CalcExchangeComponent,
     FxrateChartComponent,
+    ModalContainerComponent,
   ],
   imports: [
     BrowserModule,
@@ -50,8 +53,10 @@ import { FxrateChartComponent } from './fxrates/fxrate-chart/fxrate-chart.compon
     MatSelectModule,
     MatProgressSpinnerModule,
     ChartsModule,
+    MatDialogModule,
   ],
   providers: [],
-  bootstrap: [AppComponent],
+  bootstrap: [ AppComponent ],
 })
-export class AppModule {}
+export class AppModule {
+}

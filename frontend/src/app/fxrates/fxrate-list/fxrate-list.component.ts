@@ -12,7 +12,7 @@ import { Router } from "@angular/router";
 @Component({
   selector: 'app-fxrate-list',
   templateUrl: './fxrate-list.component.html',
-  styleUrls: ['./fxrate-list.component.css'],
+  styleUrls: [ './fxrate-list.component.css' ],
 })
 export class FxrateListComponent implements OnInit, OnDestroy {
   // Define Material progress-bar display/hide boolean
@@ -36,14 +36,14 @@ export class FxrateListComponent implements OnInit, OnDestroy {
   private paginator: MatPaginator;
   private sort: MatSort;
 
-  @ViewChild(MatSort, {static: false}) set matSort(ms: MatSort) {
+  @ViewChild(MatSort, { static: false }) set matSort(ms: MatSort) {
     this.sort = ms;
     if (this.sort) {
       this.dataSource.sort = this.sort;
     }
   }
 
-  @ViewChild(MatPaginator, {static: false}) set matPaginator(
+  @ViewChild(MatPaginator, { static: false }) set matPaginator(
     mp: MatPaginator
   ) {
     this.paginator = mp;
@@ -88,7 +88,7 @@ export class FxrateListComponent implements OnInit, OnDestroy {
   }
 
   RowSelected(row: any) {
-    this.router.navigateByUrl(`/fxrate-chart/${row.targetCurrency.alphabeticCode}`);
-    // this.router.navigate(['/fxrate-chart',row.targetCurrency.alphabeticCode]);
+    // When currency list row selected update URL to open routable modal to show the chart
+    this.router.navigate([ '/fxrate-list', row.targetCurrency.alphabeticCode ]);
   }
 }
