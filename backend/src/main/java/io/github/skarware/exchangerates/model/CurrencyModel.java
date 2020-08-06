@@ -24,11 +24,11 @@ public class CurrencyModel implements Persistable<Integer> {
     @Id
     @Column(name = "numeric_code", columnDefinition = "SMALLINT", unique = true)
     // ISO 4217 numeric code of this currency will act as unique id
-    private final int numericCode;
+    private int numericCode;
 
     @Column(name = "alphabetic_code", columnDefinition = "CHAR(3)", nullable = false)
     // ISO 4217 alphabetic code of this currency
-    private final String alphabeticCode;
+    private String alphabeticCode;
 
     public CurrencyModel(String alphabeticCode) {
         // Get and assign ISO 4217 numeric code for given currency code. It is probably safe to do this as it is java.utils class
@@ -41,11 +41,19 @@ public class CurrencyModel implements Persistable<Integer> {
         }
     }
 
-    // To keep Entity fields immutable set up DEFAULT_CURRENCY currency code (EUR), avoid using it
     protected CurrencyModel() {
-        this(DEFAULT_CURRENCY);
         // Record from database to Entity conversion default no-args constructor used, mark those as not new
         this.isNew = false;
+    }
+
+    // Get display name on the fly
+    public String getDisplayName() {
+        return java.util.Currency.getInstance(this.alphabeticCode).getDisplayName();
+    }
+
+    // Get symbol on the fly
+    public String getSymbol() {
+        return java.util.Currency.getInstance(this.alphabeticCode).getSymbol();
     }
 
     @JsonIgnore
