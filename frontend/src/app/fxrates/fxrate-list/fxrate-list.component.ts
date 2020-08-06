@@ -23,8 +23,7 @@ export class FxrateListComponent implements OnInit, OnDestroy {
 
   // Initialize columns to render on Material table
   displayedColumns: string[] = [
-    'sourceCurrency.alphabeticCode',
-    'targetCurrency.alphabeticCode',
+    'targetCurrency.displayName',
     'exchangeRate',
     'effectiveDate',
   ];

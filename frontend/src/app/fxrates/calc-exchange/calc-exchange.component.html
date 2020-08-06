@@ -10,7 +10,7 @@
 
       <mat-form-field appearance="fill" hideRequiredMarker>
         <mat-label>
-          <mat-icon>monetization_on</mat-icon>
+          <mat-icon>money_on</mat-icon>
           Amount to convert
         </mat-label>
         <input matInput type="number" maxlength="10" placeholder="Ex. 100" required
@@ -18,7 +18,6 @@
                #amount="ngModel"
                [ngModel]>
         <mat-error *ngIf="amount.invalid">Enter amount to convert</mat-error>
-
       </mat-form-field>
 
       <mat-form-field appearance="fill" hideRequiredMarker>
@@ -28,7 +27,6 @@
                #commissionRate="ngModel"
                [ngModel]>
         <mat-error *ngIf="commissionRate.invalid">Enter commission fee</mat-error>
-
       </mat-form-field>
 
       <mat-form-field appearance="fill" hideRequiredMarker>
@@ -36,7 +34,7 @@
         <mat-select name="fromCurrency" #fromCurrency="ngModel" [ngModel] (selectionChange)="onAmountInput(formElement)"
                     required>
           <mat-option *ngFor="let currency of currencyOptions"
-                      [value]="currency">{{currency.alphabeticCode}}</mat-option>
+                      [value]="currency">{{currency.displayName + ' (' + currency.alphabeticCode + ')'}}</mat-option>
         </mat-select>
         <mat-hint align="end">Convert From</mat-hint>
         <mat-error *ngIf="fromCurrency.invalid">Please select Currency</mat-error>
@@ -47,7 +45,7 @@
         <mat-select name="toCurrency" #toCurrency="ngModel" [ngModel] (selectionChange)="onAmountInput(formElement)"
                     required>
           <mat-option *ngFor="let currency of currencyOptions"
-                      [value]="currency">{{currency.alphabeticCode}}</mat-option>
+                      [value]="currency">{{currency.displayName + ' (' + currency.alphabeticCode + ')'}}</mat-option>
         </mat-select>
         <mat-hint align="end">Converto To</mat-hint>
         <mat-error *ngIf="toCurrency.invalid">Please select Currency</mat-error>

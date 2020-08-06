@@ -157,7 +157,7 @@ export class FxrateChartComponent implements OnInit {
     })
 
     // Set curves Label for chartDataSet
-    chartDataSet.label = fxRates[0].sourceCurrency.alphabeticCode + '/' + fxRates[0].targetCurrency.alphabeticCode;
+    chartDataSet.label = fxRates[0].sourceCurrency.alphabeticCode + '/' + fxRates[0].targetCurrency.alphabeticCode + ' (' + fxRates[0].targetCurrency.displayName + ')';
 
     // Push chartDataSet into this.lineChartData to draw curve on the graph
     this.lineChartData.push(chartDataSet);
