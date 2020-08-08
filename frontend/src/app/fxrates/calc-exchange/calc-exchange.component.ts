@@ -1,6 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgForm } from "@angular/forms";
-import { Subscription } from "rxjs";
 import { CurrencyExchangeDTO } from "../shared/currency-exchange-dto.model";
 import { CalcExchangeService } from "../shared/calc-exchange.service";
 import { CurrencyModel } from "../shared/currency.model";
@@ -8,21 +7,15 @@ import { CurrencyModel } from "../shared/currency.model";
 @Component({
   selector: 'app-calc-exchange',
   templateUrl: './calc-exchange.component.html',
-  styleUrls: ['./calc-exchange.component.css']
+  styleUrls: [ './calc-exchange.component.css' ]
 })
-export class CalcExchangeComponent implements OnInit, OnDestroy {
+export class CalcExchangeComponent implements OnInit {
   // Define Material progress-bar/spinner display/hide booleans
   public isLoading: boolean;
   public isConverting: boolean;
 
-  // Initialize as empty subscription then inside constructor block subscribe to currencyDTOExchange data changes
-  private currencyExchangeDTOChangeSubscription: Subscription = Subscription.EMPTY;
-
   // Initialize currencyExchangeDTO for incoming currency conversion data
-  currencyExchangeDTO: CurrencyExchangeDTO
-
-  // Initialize as empty subscription then inside constructor block subscribe to currencyOptions data changes
-  private currencyOptionsChangeSubscription: Subscription = Subscription.EMPTY;
+  currencyExchangeDTO: CurrencyExchangeDTO;
 
   // "EUR", "USD", "GBP", ...
   currencyOptions: CurrencyModel[];
@@ -32,27 +25,30 @@ export class CalcExchangeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    // While loading data from server
     this.isLoading = true;
-    // Fetch CurrencyExchange[] data from API
-    this.calcExchangeService.fetchCurrencies();
-    // Subscribe to the currencyOptions Change EventEmitter and listen for new data
-    this.currencyOptionsChangeSubscription = this.calcExchangeService.getCurrencyOptionsChanges()
-      .subscribe((newData: CurrencyModel[]) => {
+
+    // Fetch available currencies from API
+    this.calcExchangeService.fetchCurrencies()
+      .subscribe((currencyOptions: CurrencyModel[]) => {
+
+        // After data received from server
         this.isLoading = false;
+
         // Then currencyOptions Change update the dataSource with new data
-        this.currencyOptions = newData;
+        this.currencyOptions = currencyOptions;
+
       });
   }
 
-  ngOnDestroy(): void {
-    // To avoid memory leaks unsubscribe if this component is destroyed
-    this.currencyExchangeDTOChangeSubscription.unsubscribe();
-  }
-
   onAmountInput(formElement: NgForm): void {
+    // Check if form input data valid
     if (formElement.invalid) {
       return;
     }
+
+    // True, while fetching conversion result from server
     this.isConverting = true;
 
     const amount = formElement.value.amount;
@@ -60,13 +56,16 @@ export class CalcExchangeComponent implements OnInit, OnDestroy {
     const fromCurrency = formElement.value.fromCurrency.alphabeticCode;
     const toCurrency = formElement.value.toCurrency.alphabeticCode;
 
-    this.calcExchangeService.convertCurrency(fromCurrency, toCurrency, amount, commissionRate);
-
-    this.currencyExchangeDTOChangeSubscription = this.calcExchangeService.getCurrencyExchangeChanges()
+    // Get currency conversion result from API
+    this.calcExchangeService.convertCurrency(fromCurrency, toCurrency, amount, commissionRate)
       .subscribe((newData: CurrencyExchangeDTO) => {
+
+        // False, after conversion result received from server
         this.isConverting = false;
-        // Then currencyDTOExchange[] Change update the dataSource with new data
+
+        // Update the currencyExchangeDTO with new data
         this.currencyExchangeDTO = newData;
+
       });
   }
 }
