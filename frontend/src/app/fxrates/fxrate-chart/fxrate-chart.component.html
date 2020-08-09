@@ -2,6 +2,46 @@
   <mat-spinner *ngIf="isLoading"></mat-spinner>
 </div>
 
+<div class="input-data-container" *ngIf="!isLoading && !isViewModeModal">
+
+  <form>
+
+    <mat-form-field appearance="fill" hideRequiredMarker>
+      <mat-label>Currency</mat-label>
+      <mat-select name="currency0" #currency0="ngModel" [(ngModel)]="selectedCurrencies[0]"
+                  (ngModelChange)="onSelectionChangeURL()"
+                  required>
+        <mat-option *ngFor="let currency of currencyOptions"
+                    [value]="currency">{{currency.displayName + ' (' + currency.alphabeticCode + ')'}}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="currency0.invalid">Please select Currency</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" hideRequiredMarker>
+      <mat-label>Currency</mat-label>
+      <mat-select name="currency1" #currency1="ngModel" [(ngModel)]="selectedCurrencies[1]"
+                  (ngModelChange)="onSelectionChangeURL()"
+                  required>
+        <mat-option *ngFor="let currency of currencyOptions"
+                    [value]="currency">{{currency.displayName + ' (' + currency.alphabeticCode + ')'}}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="currency1.invalid">Please select Currency</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" hideRequiredMarker>
+      <mat-label>Currency</mat-label>
+      <mat-select name="currency2" #currency2="ngModel" [(ngModel)]="selectedCurrencies[2]"
+                  (ngModelChange)="onSelectionChangeURL()"
+                  required>
+        <mat-option *ngFor="let currency of currencyOptions"
+                    [value]="currency">{{currency.displayName + ' (' + currency.alphabeticCode + ')'}}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="currency2.invalid">Please select Currency</mat-error>
+    </mat-form-field>
+
+  </form>
+</div>
+
 <div class="container" *ngIf="lineChartData[0]?.data">
 
   <div style="display: block">

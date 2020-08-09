@@ -2,8 +2,11 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { BaseChartDirective, Color, Label } from "ng2-charts";
 import { ChartDataSets, ChartOptions } from "chart.js";
 import { FxRateService } from "../shared/fxrate.service";
-import { ActivatedRoute, ParamMap } from "@angular/router";
+import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { FxRate } from "../shared/fxrate.model";
+import { CurrencyModel } from "../shared/currency.model";
+import { CalcExchangeService } from "../shared/calc-exchange.service";
+import { NgForm } from "@angular/forms";
 
 @Component({
   selector: 'app-fxrate-chart',
@@ -24,12 +27,12 @@ export class FxrateChartComponent implements OnInit {
           unit: 'day'
         }
       } ],
-      yAxes: [ {
-        scaleLabel: {
-          display: true,
-          labelString: 'Exchange Rates'
-        }
-      } ]
+      // yAxes: [ {
+      //   scaleLabel: {
+      //     display: true,
+      //     labelString: 'Exchange Rate'
+      //   }
+      // } ]
     },
     elements: {
       line: {
@@ -54,12 +57,12 @@ export class FxrateChartComponent implements OnInit {
   public lineChartLegend = true;
   public lineChartColors: Color[] = [
     {
-      backgroundColor: 'rgb(0,255,0, 0.3)',
-      borderColor: 'green',
-    },
-    {
       backgroundColor: 'rgb(0,0,255, 0.3)',
       borderColor: 'blue',
+    },
+    {
+      backgroundColor: 'rgb(0,255,0, 0.3)',
+      borderColor: 'green',
     },
     {
       backgroundColor: 'rgba(255,0,0,0.3)',
@@ -74,47 +77,78 @@ export class FxrateChartComponent implements OnInit {
   //
   @ViewChild(BaseChartDirective, { static: false }) chart: BaseChartDirective;
 
+  // Initially chart view mode is not modal
+  isViewModeModal = false;
+
   // Input bound property comes from ModalContainerComponent
-  @Input() modalCurrencyParam;
+  @Input() modalCurrencyParam: string;
+
+  // "EUR", "USD", "GBP", ...
+  currencyOptions: CurrencyModel[];
+
+  // Define array for selected currencies
+  selectedCurrencies: CurrencyModel[] = [];
 
   // Inject FxRateService into this component as private class member
   constructor(
+    private calcExchangeService: CalcExchangeService,
     private fxRateService: FxRateService,
     private activatedRoute: ActivatedRoute,
+    private router: Router,
   ) {
   }
 
   ngOnInit(): void {
     this.isLoading = true;
-    // Look for parameters in URL path
-    this.activatedRoute.paramMap
-      // Then param change callback function executed
-      .subscribe((paramMap: ParamMap) => {
-        if (paramMap.has('currency')) {
 
-          // If currency param exists set up component into single currency view mode
-          // this.isViewModeSingleCurrency = true;
+    // If component is in modal view mode show chart for given currency in param
+    if (this.modalCurrencyParam) {
 
-          // Get param for fetching FxRate data
-          const targetCurrency = paramMap.get('currency').toUpperCase();
-          this.fetchAndAddCurveToChart(targetCurrency);
+      // If currency param exists set up component into modal view mode
+      this.isViewModeModal = true;
 
-        } else if (this.modalCurrencyParam) {
+      // Add given currency curve into chart
+      this.fetchAndAddCurveToChart(this.modalCurrencyParam);
 
-          // else if component is in modal view mode show chart for given currency in param
-          this.fetchAndAddCurveToChart(this.modalCurrencyParam);
+    } else {
 
-        } else {
+      // Fetch available currencies from API
+      this.calcExchangeService.fetchCurrencies()
+        .subscribe((currencyOptions: CurrencyModel[]) => {
+          // Update this.currencyOptions with new data
+          this.currencyOptions = currencyOptions;
 
-          // TODO: Make non-parameter chart page dynamical, let the use choose from 1 to 3 currencies, how they relate base currency
+          // Look for query parameters in URL path
+          this.activatedRoute.queryParamMap
+            .subscribe((paramMap: ParamMap) => {
 
-          // show how base currency relate to other currencies
-          this.fetchAndAddCurveToChart('USD');
-          this.fetchAndAddCurveToChart('GBP');
-          this.fetchAndAddCurveToChart('CAD');
+              // If query params exist, Get params for fetching FxRate data and drawing curve into the chart
+              if (paramMap.has('0')) {
+                this.selectedCurrencies[0] = this.currencyOptions.find(ccy => ccy.alphabeticCode === paramMap.get('0').toUpperCase());
+                if (paramMap.has('1')) {
+                  this.selectedCurrencies[1] = this.currencyOptions.find(ccy => ccy.alphabeticCode === paramMap.get('1').toUpperCase());
+                  if (paramMap.has('2')) {
+                    this.selectedCurrencies[2] = this.currencyOptions.find(ccy => ccy.alphabeticCode === paramMap.get('2').toUpperCase());
+                  }
+                }
+              } else {
+                // Else, Select default currencies for the chart
+                this.selectedCurrencies[0] = this.currencyOptions.find(ccy => ccy.alphabeticCode === 'USD');
+                this.selectedCurrencies[1] = this.currencyOptions.find(ccy => ccy.alphabeticCode === 'GBP');
+                this.selectedCurrencies[2] = this.currencyOptions.find(ccy => ccy.alphabeticCode === 'CHF');
+              }
 
-        }
-      });
+              // Reset Chart data before redrawing curves to avoid duplication
+              this.lineChartData = [];
+
+              // Add given currency curves into the chart
+              this.fetchAndAddCurveToChart(this.selectedCurrencies[0]?.alphabeticCode);
+              this.fetchAndAddCurveToChart(this.selectedCurrencies[1]?.alphabeticCode);
+              this.fetchAndAddCurveToChart(this.selectedCurrencies[2]?.alphabeticCode);
+
+            });
+        });
+    }
   }
 
   private fetchAndAddCurveToChart(targetCurrency: string) {
@@ -135,8 +169,7 @@ export class FxrateChartComponent implements OnInit {
           this.chart?.updateColors();
 
         } else {
-          // TODO: some error message to the UI about invalid target currency
-          console.log("Invalid target currency given");
+          console.info("Invalid target currency given");
         }
       });
   }
@@ -165,4 +198,20 @@ export class FxrateChartComponent implements OnInit {
     // Overwrite labels as it should be the same for every additional curve
     this.lineChartLabels = labels;
   }
+
+  // Method fired on selection change in input fields to change url
+  onSelectionChangeURL() {
+
+    // Change url link to reflect selected currencies
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: [
+        this.selectedCurrencies[0]?.alphabeticCode,
+        this.selectedCurrencies[1]?.alphabeticCode,
+        this.selectedCurrencies[2]?.alphabeticCode,
+      ],
+    });
+
+  }
+
 }

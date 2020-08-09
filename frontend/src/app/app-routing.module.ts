@@ -9,18 +9,17 @@ import { ModalContainerComponent } from "./fxrates/fxrate-chart/shared/modal-con
 // Routes config tells the Router which view to display when a user clicks a link or pastes a URL into the browser address bar.
 const routes: Routes = [
   { path: '', component: FxratesComponent },
+  // Set up FxRates list parent path and children path for Routable Modal technique, to enable to open up a modal that is tied to specific route.
   {
     path: 'fxrate-list', component: FxrateListComponent,
-    // Set up children path for Routable Modal technique, to enable to open up a modal that is tied to specific route.
     children: [
       {
         path: ':currency', component: ModalContainerComponent,
       }
     ]
   },
-  { path: 'calc-exchange', component: CalcExchangeComponent },
   { path: 'fxrate-chart', component: FxrateChartComponent },
-  { path: 'fxrate-chart/:currency', component: FxrateChartComponent },
+  { path: 'calc-exchange', component: CalcExchangeComponent },
 ];
 
 

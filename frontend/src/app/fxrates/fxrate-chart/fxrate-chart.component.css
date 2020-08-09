@@ -22,3 +22,15 @@
     top: 56px;
   }
 }
+
+.input-data-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-data-container .mat-form-field {
+  margin: 0.25rem 8px;
+}
+
